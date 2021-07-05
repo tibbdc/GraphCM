@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-from cobra import Reaction
-from cobra.io import read_sbml_model
 import itertools
-import os
-
+import networkx as nx
 
 def get_metpair(rea, pi_pairs1, h_pairs1, pi_pairs2, h_pairs2, nh4_pairs, other_pairs, currency_mets):
     # get the metabolite links for a reaction, excluding links through currency metabolites
@@ -88,3 +85,23 @@ def get_metpair(rea, pi_pairs1, h_pairs1, pi_pairs2, h_pairs2, nh4_pairs, other_
     for s, p in itertools.product(subs, pros):
         sub_pro.append((s, p))
     return sub_pro
+
+def search_path(G, result_save_path, substrate, target,n):#substrate and target
+    allrecID = [] 
+    G1 = G
+    tm = open(result_save_path + substrate+'+'+target+'_paths_shortest' + '.txt', 'w')  #pathway file
+    if (substrate in G1.nodes()) and (target in G1.nodes()):
+        try:
+            i=0
+            allpaths = nx.all_simple_paths(G1, substrate, target, n)
+            for eachpath in allpaths:  #eachpath is a list
+                i+=1
+                allrecID.append(eachpath)
+                tmpath = '\t'.join(eachpath)
+                tm.write(tmpath + '\n')  # write all pathways to allpaths.txt file
+                tm.flush()
+        except nx.NetworkXNoPath:
+            pass
+    print('finished!')
+    return allrecID
+
